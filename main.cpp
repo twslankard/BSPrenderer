@@ -4,7 +4,7 @@
 
 //global defines
 #define MOVEMENT_SPEED 0.12
-#define LOOK_SPEED 12.0
+#define LOOK_SPEED 2.4 
 
 using namespace std;
 
@@ -18,7 +18,7 @@ TransformNode * gun_transform;
 Node * root;					//root of the scenegraph
 Node * select_node = NULL;			//the currently selected node in the scenegraph
 int mpos_x, mpos_y;				//the current mouse position
-int W = 640, H = 480;				//width and height of the window
+int W = 800, H = 600;				//width and height of the window
 int KeyDown[256];				//stores which keys are down
 bool paused = false;				//true if the game is paused
 Misc::Timer timer;				//limits the player movement
@@ -39,7 +39,7 @@ float bob = 0.0;
 int main(int argc, char * argv[])
 {
 	//initialize glut
-	glutInitWindowSize(640, 480);
+	glutInitWindowSize(W, H);
 	glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
@@ -69,8 +69,8 @@ int main(int argc, char * argv[])
 
 	//enable functions for handling the mouse, for rotation
 	glutMouseFunc(mouse);
-	glutMotionFunc(motion);
-	glutPassiveMotionFunc(passive_motion);
+    glutMotionFunc(motion);
+    glutPassiveMotionFunc(passive_motion);
 
 	//create a menu
 	view_options_menu = glutCreateMenu(viewOptions);
@@ -404,7 +404,8 @@ void idle(void)
 		if(KeyDown['a'])
 		{
 			is_moving = true;
-			camera.sidestepLeft(MOVEMENT_SPEED);
+			//camera.sidestepLeft(MOVEMENT_SPEED);
+			camera.turnLeft(LOOK_SPEED);
 		}
 		if(KeyDown['s'])
 		{
@@ -414,7 +415,8 @@ void idle(void)
 		if(KeyDown['d'])
 		{
 			is_moving = true;
-			camera.sidestepRight(MOVEMENT_SPEED);
+			//camera.sidestepRight(MOVEMENT_SPEED);
+			camera.turnRight(LOOK_SPEED);
 		}
 		/*if(KeyDown['r'])
 		{
@@ -446,8 +448,8 @@ void idle(void)
 		camera.m_position.z = colz.z;
 
 		//change the look direction depending on the mouse position
-		camera.turnRight((mpos_x - W/2) / LOOK_SPEED);
-		camera.lookUp((mpos_y - H/2) / LOOK_SPEED);
+		//camera.turnRight((mpos_x - W/2) / LOOK_SPEED);
+		//camera.lookUp((mpos_y - H/2) / LOOK_SPEED);
 
 		//set the mouse postion to the center of the screen
 		//this allows the user to keep panning the view around

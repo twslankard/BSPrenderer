@@ -5,14 +5,14 @@
 # libraries to use
 #==========================================================================
 
-LDFLAGS	= -L/usr/X11R6/lib -lX11 -lXi -lXmu -lglut -lGL -lGLU
+LDFLAGS	= -Wl,--rpath -Wl,/usr/local/lib -L/usr/local/lib -L/usr/X11R6/lib -lX11 -lXi -lXmu -lglut -lGL -lGLU
 
 
 #==========================================================================
 # compiler flags
 #==========================================================================
 CXX      = g++
-CXXFLAGS = -g -O3 -Wall
+CXXFLAGS = -g -O3 -Wall 
 
 CC	= $(CXX)
 CFLAGS	= $(CXXFLAGS)
