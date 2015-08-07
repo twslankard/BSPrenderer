@@ -1,0 +1,4 @@
+Map: q3dm1.bsp
+Curve Tesselation: 8
+Camera Position: (10.0 0.875 -33.0)
+Camera Orientation: 0.0 0.0

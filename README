@@ -1,0 +1,181 @@
+README
+Tom Slankard's Scenegraph Demo, BSP and MD3 Viewer
+
+--------------------------------------------------------------------------------
+To compile and run
+--------------------------------------------------------------------------------
+
+make
+./quakebsp
+
+--------------------------------------------------------------------------------
+To use
+--------------------------------------------------------------------------------
+
+NEW SINCE LAST TIME:
+
+To move around the world, use the 'w', 'a', 's', and 'd' keys (kind of like quake)
+and use the mouse for looking around.
+
+To change any of the view options or to select an object, you'll need to pause the "game"
+using the escape key. You can resume by pressing the escape key again.
+
+While the game is paused you can right click to bring up the options menu,
+and middle click to bring up the selection menu.
+
+ORIGINAL:
+
+To move an object, select a transformation node affecting it and
+use the arrow keys to translate in the XZ (horizontal viewing) plane.
+Use the ,. (comma and period) keys to rotate the object. (An object won't move
+if you don't have a transformation node selected.)
+
+
+--------------------------------------------------------------------------------
+Features
+--------------------------------------------------------------------------------
+
+NEW SINCE LAST TIME:
+
+ - Has level of detail nodes, which allow an arbitrary number of detail levels to be loaded.
+ - Implements view frustum culling
+ - Loads and renders Quake BSP levels, complete with textures and lightmaps
+
+ORIGINAL:
+
+ - Loads MD3 models with .bmp textures or .tga textures
+ - Animates MD3 models
+ - Calculates proper lighting for MD3 models
+ - Implements an N-ary tree based scenegraph, having model nodes, transformation nodes, and lighting nodes
+ - Hierarchial transformation
+ - Uses instancing, so models need not be stored more than once
+ - Complete AABB hierarchy
+ - Simple menu interface allows user to toggle lighting, textures, bounding boxes, and light positions
+ - Interface to translate and rotate objects in the scene.
+
+REMOVED:
+
+ - Quaternion rotation to rotate the scene.
+
+--------------------------------------------------------------------------------
+Implementation details
+--------------------------------------------------------------------------------
+
+NEW SINCE LAST TIME:
+
+The view frustum culling seems to work well. The program prints a message "Lara is visible" in the corner of the screen
+when the Lara Croft model in the middle of the level is in the view frustum (and being rendered.)
+Likewise, the program prints "Lara is not visible" when the model is outside of the frustum
+(and not being rendered.) I don't have any other way to prove its correctness, but I'm assuming it works
+because the code is very simple.
+
+A level of detail node switches between which child to draw based on the distance and the number of levels of detail.
+There is also a tolerance that prevents any oscillation between levels of detail.
+One can add as many levels of detail as they like to an LODNode, but I just added two to the current scene.
+Since I don't have more than one level of detail for any of the models,
+I use a stormtrooper model for the second level of detail for the lara croft model.
+
+The other stormtrooper in the scene doesn't have another level of detail.
+
+Most of the Quake BSP code is from Paul's BSP loader: http://www.paulsprojects.net/opengl/q3bsp/q3bsp.html
+But a lot of changes were made to it. First I removed all of the windows-related stuff (which amounted to about 6 files worth!)
+I also changed the texture rendering so that it uses regular ol' GL_BLEND instead of the Multitexture ARB extention.
+
+
+Instancing:
+
+The instancing code isn't particularly elegant, but it works.
+Currently, the MD3Node class uses two constructors--one that loads a model from a file,
+and one that creates an instance of an already-loaded model. This does allow some flexibility,
+if instancing are not desired for some reason. Basically, the current scheme isn't especially simple,
+but it allows the programmer complete control over instancing behavior.
+
+Bounding Volume Hierarchy:
+
+The quaternion rotation code I'm using transforms the MODELVIEW matrix,
+which is why the bounding boxes are always "parallel" to the screen.
+
+The bounding volumes for the models are computed during drawing, for performance reasons.
+
+Lighting:
+
+The MD3 model format stores vertex normals in two unsigned bytes,
+which represent the two angles in spherical coordinates.
+Since the tutorial never used normals for rendering, I wrote code to convert
+the two bytes to radians, and then convert the resulting spherical coordinates
+to cartesian coordinates.
+
+Currently, lighting nodes only affect children.
+Later I plan to encorporate global lighting for added flexibility.
+
+Animation:
+
+I made quite a few changes to the tutorial's animation code.
+The current time was being retrieved using a windows system call.
+So I replaced the windows timer functions with Oliver Kreylos' Timer class.
+I also made a few performance enhancements and bug fixes.
+
+Selection Code:
+
+I'm working on mouse-based node selection. It's not fully-implemented yet,
+so it's not usable. However, some of the code is still in the source files.
+
+
+--------------------------------------------------------------------------------
+Code I used
+--------------------------------------------------------------------------------
+
+NEW SINCE LAST TIME:
+
+I've made a few modest changes to the image loading code. Some of it was borrowed from
+Paul's Quake BSP loader.
+http://www.paulsprojects.net/opengl/q3bsp/q3bsp.html.
+
+Code to load and render Quake BSPs was taken from
+Paul's Quake BSP loader, with significant modifications
+http://www.paulsprojects.net/opengl/q3bsp/q3bsp.html
+
+View frustum culling uses Paul's frustum class, although it's implemented using a very common method,
+so I don't think he deserves much credit actually. I would have done the same thing, I just didn't want to repeat the work.
+(And once again, the BVH code is 100% original.)
+
+Level of detail code is 100% original.
+
+ORIGINAL:
+
+All of the scenegraph and bounding-volume hierarchy code is original.
+I used code from nehe.gamedev.net to load BMP files. I used code from steinsoft.net to load TGA files.
+I used code from gametutorials.com to load, render, and animate MD3 quake models,
+although large portions were re-written or modified to suit my needs,
+(or to fix bugs.)
+I used Oliver Kreylos timer class for animation purposes.
+I wrote my own code for the lighting of the MD3 models.
+Portions of the app's GLUT code is from the "Dinospin" quaternion tutorial.
+The trackball code was written by Gavin Bell for Silicon Graphics.
+
+
+
+
+
+
+Here are the references I used for loading and rendering the Quake
+levels, (and also for collision detection.)
+
+BSP file format spec from Kekoa Proudfoot from Standford:
+http://graphics.stanford.edu/~kekoa/q3/
+
+Another document on the BSP file format:
+http://www.cs.uwec.edu/~stevende/cs455/programs/GameTutorials%20-%20Quake%203%20BSP%20Format.htm
+
+Rendering BSPs:
+http://graphics.cs.brown.edu/games/quake/quake3.html
+
+Paul's project Q3 BSP loader & renderer:
+http://www.paulsprojects.net/opengl/q3bsp/q3bsp.html
+(Much of the code for loading and rendering the BSPs are from this
+project, although most of his code is from the format specification
+docs mentioned above.)
+
+Collision detection:
+http://www.devmaster.net/articles/quake3collision/
+
